@@ -15,16 +15,24 @@ const Stats = props => {
   )
 }
 
-const Display = props => {
-  console.log("display props", props)
+const Display = ({good,neutral,bad}) => {
+  console.log(good,neutral,bad)
+  if (good === 0 && neutral === 0 && bad === 0) {
   return(
     <div>
-     <p>good {props.good}</p>
-     <p>neutral {props.neutral}</p>
-     <p>bad {props.bad}</p>
-     <Stats good={props.good} bad={props.bad} neutral={props.neutral} />
+      <p>No feedback given</p>
     </div>
   )
+  } else {
+    return(
+      <div>
+      <p>good {good}</p>
+      <p>neutral {neutral}</p>
+      <p>bad {bad}</p>
+      <Stats good={good} bad={bad} neutral={neutral} />
+      </div>
+    )
+  }
 }
 
 const App = () => {
