@@ -2,6 +2,19 @@ import { useState } from 'react'
 
 const Button = ({onclick, text}) => <button onClick={onclick}> {text} </button>
 
+const Stats = props => {
+  const total = props.good + props.neutral + props.bad
+  const average = (props.good * 1 + props.neutral * 0 + props.bad * -1) / total
+  const positive = (props.good / total) * 100
+  return (
+    <>
+    <p>all {total}</p>
+    <p>average {average} </p>
+    <p>positive {positive} %</p>
+    </>
+  )
+}
+
 const Display = props => {
   console.log("display props", props)
   return(
@@ -9,6 +22,7 @@ const Display = props => {
      <p>good {props.good}</p>
      <p>neutral {props.neutral}</p>
      <p>bad {props.bad}</p>
+     <Stats good={props.good} bad={props.bad} neutral={props.neutral} />
     </div>
   )
 }
