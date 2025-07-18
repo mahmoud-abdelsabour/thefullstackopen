@@ -8,6 +8,28 @@ const vote = props => {
   props.setVotes(copy)
 }
 
+const DispMax = ({ votes, anecdotes }) => {
+  const maxVotes = Math.max(...votes)
+  const maxIndex = votes.indexOf(maxVotes)
+
+  if(maxVotes > 0 ){
+    return(
+      <div>
+        <h1>Anecdotes with the most votes</h1>
+        <p>{anecdotes[maxIndex]}</p>
+        <p>has {maxVotes} votes</p>
+      </div>
+    )
+  }
+  else{
+    return(
+      <div>
+        <h1>Anecdotes with the most votes</h1>
+        <p>no info</p>
+      </div>
+    )
+  }
+}
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -25,10 +47,14 @@ const App = () => {
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
+
       <p>{anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
       <Button text="vote" onClick={() => vote({selected,votes,setVotes})}/>
       <Button text="next anecdote" onClick={() => setSelected(Math.floor(Math.random() * 8))}/>
+
+      <DispMax votes={votes} anecdotes={anecdotes}/>
     </div>
   )
 }
