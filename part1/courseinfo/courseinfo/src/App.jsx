@@ -1,46 +1,71 @@
-const Header = props => <h1>{props.course.name}</h1>
-const Part = props => <p>{props.part} {props.ex}</p>
-const Content = props => {
-  return (
+const Course = ({course}) => {
+
+  return(
     <div>
-      <Part part={props.course.parts[0].name} ex={props.course.parts[0].exercises}/>
-      <Part part={props.course.parts[1].name} ex={props.course.parts[1].exercises}/>
-      <Part part={props.course.parts[2].name} ex={props.course.parts[2].exercises}/>
+      <Header course={course.name}/>
+      <Content parts={course.parts}/>
     </div>
   )
 }
-const Total = props => <p>Total Number of Exercises {props.course.parts[0].exercises + props.course.parts[1].exercises + props.course.parts[2].exercises}</p>
+
+const Header = (props) => <h1>{props.course}</h1>
+
+const Content = (props) => {
+  const parts = props.parts.map(part => <Part key={part.id} part={part}/> )
+
+  return(
+  <div>
+    {parts}
+  </div>
+)}
+
+const Part = (props) => (
+  <p>
+    {props.part.name} {props.part.exercises}
+  </p>
+)
+
+//const Total = (props) => <p>Number of exercises {props.total}</p>
 
 const App = () => {
   const course = {
+    id: 1,
     name: 'Half Stack application development',
-
-    parts : [
+    parts: [
       {
         name: 'Fundamentals of React',
-        exercises: 10
+        exercises: 10,
+        id: 1
       },
-
       {
         name: 'Using props to pass data',
-        exercises: 7
+        exercises: 7,
+        id: 2
       },
-      
       {
         name: 'State of a component',
-        exercises: 14
-      }
-    ]
+        exercises: 14,
+        id: 3
+      },
+    ],
   }
-  return (
-    <div>
-      
-      <Header course = {course} />
-      <Content course = {course} />
-      <Total course = {course} />
 
+  return <Course course={course}/>
+
+
+  /*return (
+    <div>
+      <Header course={course.name} />
+      <Content parts={course.parts} />
+      <Total
+        total={
+          course.parts[0].exercises +
+          course.parts[1].exercises +
+          course.parts[2].exercises
+        }
+      />
     </div>
-  )
+  )*/
 }
 
 export default App
