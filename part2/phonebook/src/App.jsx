@@ -11,6 +11,12 @@ const App = () => {
     event.preventDefault()
     console.log('button clicked', event.target)
 
+    const nameExist = persons.find(person => person.name === newName)
+    if(nameExist) {
+      alert(`${newName} already exists`)
+      return
+    }
+
     const nameObject = {
       name: newName
     }
