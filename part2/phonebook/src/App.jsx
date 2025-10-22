@@ -6,7 +6,7 @@ import axios from 'axios'
 import personsService from './services/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([{}]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [SearchTerm, setSearchTerm] = useState('')
@@ -31,8 +31,7 @@ const App = () => {
 
     const personObject = {
       name: newName,
-      number: newNumber,
-      id: String(persons.length + 1)
+      number: newNumber
     }
 
     personsService.create(personObject).then(returnedPerson=>setPersons(persons.concat(returnedPerson)))
@@ -56,6 +55,21 @@ const App = () => {
     setSearchTerm(event.target.value)
   }
 
+  const deleteEvent = (id, name) => {
+    if(window.confirm(`Delete ${name} ?`))
+    {
+      personsService.Delete(id).then(response => 
+      {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+      .catch(err => {
+        console.log('Delete failed', err)
+      })
+      console.log(`${name} id:${id} deleted`)
+    }else{
+      console.log('user cancelled deletion')
+    }
+  }
   const personsToShow = SearchTerm === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(SearchTerm.toLowerCase()))
 
   return (
@@ -73,7 +87,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} deleteEvent={deleteEvent} />
     </div>
   )
 }
