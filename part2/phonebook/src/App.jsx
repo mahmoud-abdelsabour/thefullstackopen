@@ -23,16 +23,23 @@ const App = () => {
     event.preventDefault()
     console.log('button clicked', event.target)
 
-    const nameExist = persons.find(person => person.name === newName)
-    if(nameExist) {
-      alert(`${newName} already exists`)
-      return
-    }
-
     const personObject = {
       name: newName,
       number: newNumber
     }
+
+    const nameExist = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+    if(nameExist && window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+      personsService.update(nameExist.id, personObject).then(response => 
+        { 
+          setPersons(persons.map(person => 
+            person.id !== nameExist.id ? person : response
+        ))})
+      setNewName('')
+      setNewNumber('')
+      return
+    }
+
 
     personsService.create(personObject).then(returnedPerson=>setPersons(persons.concat(returnedPerson)))
 
