@@ -26,7 +26,7 @@ const App = () => {
     console.log('promise fulfilled')
   },[])
 
-  console.log('render', persons.length, 'persons')
+  //console.log('render', persons.length, 'persons')
 
   const addPerson = (event) => {
     event.preventDefault()
