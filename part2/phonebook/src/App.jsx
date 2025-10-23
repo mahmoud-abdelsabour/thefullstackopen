@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 import Filter from './components/Filter'
 import axios from 'axios'
 import personsService from './services/persons'
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [SearchTerm, setSearchTerm] = useState('')
+  const [errMessage, setErrMessage] = useState(null)
 
   useEffect( () => {
     console.log('effect')
@@ -34,14 +36,23 @@ const App = () => {
         { 
           setPersons(persons.map(person => 
             person.id !== nameExist.id ? person : response
-        ))})
+        ))})        
       setNewName('')
       setNewNumber('')
+      setErrMessage(`'${nameExist.name}' has been successfully edited`)
+      setTimeout(() => {
+          setErrMessage(null)
+      }, 5000);
       return
     }
 
 
     personsService.create(personObject).then(returnedPerson=>setPersons(persons.concat(returnedPerson)))
+    setErrMessage(`'${personObject.name}' has been successfully added to the phonebook`)
+    setTimeout(() => {
+        setErrMessage(null)
+      }, 5000);
+
 
     setNewName('')
     setNewNumber('')
@@ -68,13 +79,21 @@ const App = () => {
       personsService.Delete(id).then(response => 
       {
         setPersons(persons.filter(person => person.id !== id))
+        setErrMessage(`'${name}' has been successfully deleted`)
+        setTimeout(() => {
+          setErrMessage(null)
+      }, 5000);
+
       })
       .catch(err => {
         console.log('Delete failed', err)
+
       })
       console.log(`${name} id:${id} deleted`)
     }else{
       console.log('user cancelled deletion')
+
+
     }
   }
   const personsToShow = SearchTerm === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(SearchTerm.toLowerCase()))
@@ -82,6 +101,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errMessage} />
       <Filter SearchTerm={SearchTerm} handleSearchTermChange={handleSearchTermChange} />
 
       <h2>Add a New Number</h2>
