@@ -41,11 +41,15 @@ const App = () => {
     setValue(event.target.value)
   }
 
+  const handleShowButton = (cca3) =>{
+    setResult(prev => prev.filter(r => r.cca3 === cca3))
+  }
+
   return (
     <div>
       find countries <input value={value} onChange={handleValueChange} />
       {msg}
-      <Country result={result} />
+      <Country result={result} handleShowButton={handleShowButton} />
     </div>
   )
 }

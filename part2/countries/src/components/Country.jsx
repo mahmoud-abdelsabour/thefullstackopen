@@ -1,4 +1,4 @@
-const Country = ({result})=>{
+const Country = ({result, handleShowButton})=>{
     if (!result || result.length === 0) return null
 
     if(result.length === 1)
@@ -19,7 +19,7 @@ const Country = ({result})=>{
     }else{
         return(
             <div>
-                {result.map(res=> <p key={res.cca3}>{res.name.common}</p>)}
+                {result.map(res=> <p key={res.cca3}>{res.name.common} <button onClick={ ()=> handleShowButton(res.cca3)}>Show</button> </p>)}
             </div>
         )
     }
