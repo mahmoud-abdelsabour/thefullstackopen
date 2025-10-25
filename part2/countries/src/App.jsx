@@ -6,6 +6,7 @@ const App = () => {
   const [value, setValue] = useState('')
   const [result, setResult] = useState([])
   const [msg, setMsg] = useState(null)
+  const [weather, setWeather] = useState(null)
 
   useEffect(() => {
     if (!value) {
@@ -37,6 +38,23 @@ const App = () => {
       })
   }, [value])
 
+  useEffect( () => {
+    if(result.length !== 1) return 
+    const baseURL='http://api.weatherapi.com/v1/current.json'
+    const apiKey = import.meta.env.VITE_SOME_KEY;
+    const lat = result[0].capitalInfo.latlng[0]
+    const lng = result[0].capitalInfo.latlng[1]
+    console.log('weather useEffect')
+    axios
+      .get(`${baseURL}?key=${apiKey}&q=${lat},${lng}`)
+      .then(response => {
+        setWeather(response.data)
+        console.log('recieved response')
+      })
+      .catch(err=>console.log(`Error in fetching weather data ${err}`))
+
+  },[result])
+
   const handleValueChange = (event) => {
     setValue(event.target.value)
   }
@@ -49,7 +67,7 @@ const App = () => {
     <div>
       find countries <input value={value} onChange={handleValueChange} />
       {msg}
-      <Country result={result} handleShowButton={handleShowButton} />
+      <Country result={result} handleShowButton={handleShowButton} weather={weather}/>
     </div>
   )
 }
