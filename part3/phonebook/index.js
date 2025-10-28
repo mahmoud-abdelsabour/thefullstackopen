@@ -65,6 +65,13 @@ app.post('/api/persons',(request,response)=>{
         })
     }
 
+    if(persons.find(p=>p.name.toLowerCase() === body.name.toLowerCase()))
+    {
+        return response.status(400).json({
+            error: 'name must be unique'
+        })
+    }
+
     const person ={
         id: Math.floor(Math.random() * 1000000).toString(),
         name: body.name,
