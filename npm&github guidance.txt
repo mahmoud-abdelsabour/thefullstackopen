@@ -1,3 +1,5 @@
+npm
+
 create: => 
 
 # npm 6.x (outdated, but still used by some):
@@ -16,6 +18,8 @@ libraries: =>
 npm install axios
 
 npm install json-server --save-dev
+
+node --watch index.js //automatic server changes tracking
 
 ============================================
 
