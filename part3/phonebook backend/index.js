@@ -1,8 +1,10 @@
 const morgan = require('morgan')
+const cors = require('cors')
 const express = require('express')
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 morgan.token('body', (req)=> req.method === 'POST' ? JSON.stringify(req.body) : '' )
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
@@ -36,16 +38,19 @@ let persons =
     }
 ]
 
+// get all
 app.get('/api/persons', (request, response) =>{
     response.json(persons)
 })
 
+// info
 app.get('/api/info', (request,response)=>{
     const time = new Date().toString()
     const personsCount = persons.length
     response.send(`Phonebook has info for ${personsCount} people <br> ${time}`)
 })
 
+// get person by id
 app.get('/api/persons/:id', (request,response)=> {
     const id = request.params.id
     const person = persons.find(p => p.id === id)
@@ -57,6 +62,7 @@ app.get('/api/persons/:id', (request,response)=> {
     }
 })
 
+// delete person
 app.delete('/api/persons/:id', (request,response)=>{
     const id = request.params.id
     persons = persons.filter(p=>p.id !== id)
@@ -64,6 +70,7 @@ app.delete('/api/persons/:id', (request,response)=>{
     response.status(204).end()
 })
 
+// create person
 app.post('/api/persons',(request,response)=>{
     const body = request.body
 
