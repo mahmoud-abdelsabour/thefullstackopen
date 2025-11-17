@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "\"echo \\\"Error: no test specified\\\" && exit 1\""
+    "test": "\"echo \\\"Error: no test specified\\\" && exit 1\"",
+    "build:ui": "if exist ..\\phonebook-backend\\dist rd /s /q ..\\phonebook-backend\\dist && cd ..\\phonebook-frontend && if exist dist rd /s /q dist && npm run build && xcopy dist ..\\phonebook-backend\\dist /E /I /Y",
+    "deploy:full": "npm run build:ui && git add . && git commit -m 3.11 Full Stack Phonebook && git push"
   },
   "author": "Mahmoud Ahmed",
   "license": "ISC",
