@@ -1,4 +1,6 @@
 npm
+============================================
+Frontend
 
 create: => 
 
@@ -19,7 +21,16 @@ npm install axios
 
 npm install json-server --save-dev
 
+============================================
+Backend
+
+npm init //create the project directory
+
+npm start //start the server by running the js file specified in package.json scripts
+
 node --watch index.js //automatic server changes tracking
+
+npm run dev //write the previous command in package.json scripts as dev and use it to start the server in dev mode
 
 ============================================
 
