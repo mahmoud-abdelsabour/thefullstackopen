@@ -64,18 +64,21 @@ const App = () => {
     }
 
 
-    personsService.create(personObject).then(returnedPerson=>setPersons(persons.concat(returnedPerson)))
-        .catch(err=>{
-      setErrMessage(`Error in creating person ${err}`)
+    personsService.create(personObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNotf(`'${personObject.name}' has been successfully added to the phonebook`)
+      setTimeout(() => {
+        setNotf(null)
+      }, 5000);
+    })
+    .catch(err=>{
+      setErrMessage(`Error in creating person ${err.response.data.error}`)
       setTimeout(() => {
         setErrMessage(null)
       }, 5000);
     })
 
-    setNotf(`'${personObject.name}' has been successfully added to the phonebook`)
-    setTimeout(() => {
-        setNotf(null)
-      }, 5000);
 
 
     setNewName('')

@@ -11,6 +11,8 @@ const errorHandler = (error, request, response, next) => {
 
     if(error.name === 'CastError') {
         return response.status(400).send({error: 'malformatted id'})
+    }else if(error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
     next(error)
 }
@@ -23,30 +25,6 @@ morgan.token('body', (req)=> req.method === 'POST' ? JSON.stringify(req.body) : 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 
-
-let persons = 
-[
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
 
 // get all
 app.get('/api/persons', (request, response) => {
@@ -69,7 +47,6 @@ app.get('/api/info', (request, response) => {
 // get person by id
 app.get('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
-    const person = persons.find(p => p.id === id)
 
     Person.findById(id)
     .then(person => {
@@ -95,7 +72,7 @@ app.delete('/api/persons/:id', (request,response, next) => {
 })
 
 // create person
-app.post('/api/persons',(request, response) => {
+app.post('/api/persons',(request, response, next) => {
     const body = request.body
 
     if(!body.name || !body.number)
@@ -120,6 +97,7 @@ app.post('/api/persons',(request, response) => {
     person.save().then(savedPerson => {
         response.json(savedPerson)
     })
+    .catch(error => next(error))
 
 })
 
