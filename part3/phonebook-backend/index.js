@@ -5,6 +5,16 @@ const express = require('express')
 const Person = require('./models/person')
 const app = express()
 
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if(error.name === 'CastError') {
+        return response.status(400).send({error: 'malformatted id'})
+    }
+    next(error)
+}
+
 app.use(express.static('dist'))
 app.use(express.json())
 app.use(cors())
@@ -12,9 +22,6 @@ app.use(cors())
 morgan.token('body', (req)=> req.method === 'POST' ? JSON.stringify(req.body) : '' )
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-const unknownEndpoint = (req, res) => {
-  res.status(404).json({ error: 'unknown endpoint' });
-}
 
 
 let persons = 
@@ -49,14 +56,14 @@ app.get('/api/persons', (request, response) =>{
 })
 
 // info
-app.get('/api/info', (request,response)=>{
+app.get('/api/info', (request, response)=>{
     const time = new Date().toString()
     const personsCount = persons.length
     response.send(`Phonebook has info for ${personsCount} people <br> ${time}`)
 })
 
 // get person by id
-app.get('/api/persons/:id', (request,response)=> {
+app.get('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
     const person = persons.find(p => p.id === id)
 
@@ -79,7 +86,7 @@ app.delete('/api/persons/:id', (request,response, next) => {
 })
 
 // create person
-app.post('/api/persons',(request,response)=>{
+app.post('/api/persons',(request, response) => {
     const body = request.body
 
     if(!body.name || !body.number)
@@ -107,8 +114,12 @@ app.post('/api/persons',(request,response)=>{
 
 })
 
+const unknownEndpoint = (req, res) => {
+  res.status(404).json({ error: 'unknown endpoint' });
+}
 
 app.use(unknownEndpoint);
+app.use(errorHandler)
 
 
 const PORT = process.env.port || 3001
