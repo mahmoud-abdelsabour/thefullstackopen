@@ -52,7 +52,7 @@ const App = () => {
 
       })
         .catch(err=>{
-        setErrMessage(`Error in updating person ${err}`)
+        setErrMessage(`Error in updating person ${err.response.data.error}`)
         setTimeout(() => {
         setErrMessage(null)
       }, 5000);

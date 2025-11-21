@@ -63,3 +63,80 @@ Some Production Services
 The 400 (Bad Request) status code indicates that the server cannot or will 
 not process the request due to something that is perceived to be a client error 
 (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+
+=============================================================
+Explanation of mongoose validators turned off for update ops|
+=============================================================
+
+Here is the **brief and simple explanation** (in your preferred style):
+
+---
+
+## ✅ What the course means
+
+When you update a document using:
+
+* `updateOne()`
+* `updateMany()`
+* `findOneAndUpdate()`
+* `update()`
+
+**Mongoose does NOT run validators by default.**
+(Validators = required, minLength, custom validators, etc.)
+
+So if your schema says:
+
+```javascript
+name: { type: String, required: true }
+```
+
+and you update like this:
+
+```javascript
+Person.updateOne({}, { name: '' })
+```
+
+👉 **No error will happen unless you enable validators**.
+
+---
+
+## ✅ How to enable validators
+
+Just add this option:
+
+```javascript
+{ runValidators: true }
+```
+
+Example in your style:
+
+```javascript
+Person.findOneAndUpdate(
+  { _id: id },
+  { number: newNumber },
+  { new: true, runValidators: true }
+)
+  .then(updatedPerson => {
+    response.json(updatedPerson);
+  })
+  .catch(error => next(error));
+```
+
+---
+
+## ⚠ Why they are OFF by default?
+
+Because update validators have caveats:
+
+1. **Only the fields you update get validated**, not the whole document.
+2. Some validators (like `required`) behave differently in updates.
+
+---
+
+## 🔥 Simple summary
+
+* **Create/Save = validators ON automatically**
+* **Update methods = validators OFF**
+* To turn them on → `runValidators: true`
+
+That's it.
