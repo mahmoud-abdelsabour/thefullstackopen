@@ -68,11 +68,14 @@ app.get('/api/persons/:id', (request,response)=> {
 })
 
 // delete person
-app.delete('/api/persons/:id', (request,response)=>{
+app.delete('/api/persons/:id', (request,response, next) => {
     const id = request.params.id
-    persons = persons.filter(p=>p.id !== id)
+    Person.findByIdAndDelete(id)
+    .then(result => {
+        response.status(204).end()
+    })
+    .catch(error => next(error))
 
-    response.status(204).end()
 })
 
 // create person
