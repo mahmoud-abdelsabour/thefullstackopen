@@ -49,17 +49,21 @@ let persons =
 ]
 
 // get all
-app.get('/api/persons', (request, response) =>{
+app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
         response.json(persons)
     })
 })
 
 // info
-app.get('/api/info', (request, response)=>{
+app.get('/api/info', (request, response) => {
     const time = new Date().toString()
-    const personsCount = persons.length
-    response.send(`Phonebook has info for ${personsCount} people <br> ${time}`)
+    Person.countDocuments({}).then(count => {
+        response.send(`Phonebook has info for ${count} people <br> ${time}`)
+    })
+    .catch(error => {
+        next(error)
+    })
 })
 
 // get person by id
@@ -67,11 +71,16 @@ app.get('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
     const person = persons.find(p => p.id === id)
 
-    if(person){
+    Person.findById(id)
+    .then(person => {
+        if(!person) return response.status(404).end
+
         response.json(person)
-    }else{
-        response.status(404).end()
-    }
+    })
+    .catch(error => {
+        next(error)
+    })
+
 })
 
 // delete person
@@ -112,6 +121,24 @@ app.post('/api/persons',(request, response) => {
         response.json(savedPerson)
     })
 
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+    const id = request.params.id
+    const {name, number} = request.body
+
+    Person.findById(id)
+    .then(person => {
+        if(!person) return response.status(404).end()
+
+        person.name = name
+        person.number = number
+
+        return person.save().then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
