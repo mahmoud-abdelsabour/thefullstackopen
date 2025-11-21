@@ -41,6 +41,15 @@ git add .
 git commit -m "message"
 git push
 
+======================
+Back to an old commit|
+======================
+
+git log //detailed info for all commits on the repo
+git reset --hard <commit_hash> //reset the repo to the commit linked to hash
+git push origin HEAD --force //pushes the changes to github
+
+
 ============================================
 
 Some Production Services
