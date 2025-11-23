@@ -4,6 +4,8 @@ const dummy = blogs => {
 
 const totalLikes = blogs => blogs.reduce((total, curr) => total + curr.likes, 0)
 
-listHelper = { dummy, totalLikes }
+const favoriteBlog = blogs => blogs.length === 0 ? {} : blogs.reduce((max, curr) => curr.likes > max.likes ? curr : max, blogs[0])
+
+listHelper = { dummy, totalLikes, favoriteBlog }
 
 module.exports = listHelper

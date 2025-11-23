@@ -3,15 +3,6 @@ const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 const blog = require('../models/blog')
 
-test('dummy returns one', () => {
-    const blogs = []
-
-    const result = listHelper.dummy(blogs)
-    assert.strictEqual(result, 1)
-})
-
-describe('total likes', () => {
-
     const emptyList = []
 
     const listWithOneBlog = [
@@ -76,6 +67,15 @@ describe('total likes', () => {
         }  
     ]
 
+
+test('dummy returns one', () => {
+    const blogs = []
+
+    const result = listHelper.dummy(blogs)
+    assert.strictEqual(result, 1)
+})
+
+describe('total likes', () => {
     test('of empty list is zero', () => {
     const result = listHelper.totalLikes(emptyList)
     assert.strictEqual(result, 0)
@@ -91,4 +91,21 @@ describe('total likes', () => {
     assert.strictEqual(result, 36)
     })
 
+})
+
+describe('favorite blog', () => {
+    test('of empty list is empty object {}', () => {
+        const result = listHelper.favoriteBlog(emptyList)
+        assert.deepStrictEqual(result, {})
+    })
+
+    test('when list has only one blog, equals that blog', () => {
+        const result = listHelper.favoriteBlog(listWithOneBlog)
+        assert.deepStrictEqual(result, listWithOneBlog[0])
+    })
+
+    test('of a bigger list is the blog with the highest number of likes', () => {
+        const result = listHelper.favoriteBlog(blogs)
+        assert.deepStrictEqual(result, blogs[2])
+    })
 })
