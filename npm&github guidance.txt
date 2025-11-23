@@ -52,7 +52,9 @@ git push origin HEAD --force //pushes the changes to github
 
 ============================================
 
-Some Production Services
+=========================
+Some Production Services|
+=========================
 -Heroku
 -Fly.io 
 -Render
@@ -145,6 +147,9 @@ That's it.
 
 
 =============================
-npm install eslint @eslint/js --save-dev //installed as dev dependency not needed in produciton
-
-npx eslint . --fix //auto fix
+npm install eslint @eslint/js --save-dev                       //installed as dev dependency not needed in produciton
+npx eslint --init                                              //init the configuration file
+npm install --save-dev @stylistic/eslint-plugin                //install stylistic plugin
+npx eslint index.js                                            //run for specified file
+npx eslint . --fix                                             //auto fix all files
+"lint": "eslint ."                                             //npm script [npm run lint]
