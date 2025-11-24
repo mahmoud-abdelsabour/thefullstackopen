@@ -11,7 +11,7 @@ const favoriteBlog = blogs => blogs.length === 0 ? {} : blogs.reduce((max, curr)
 const mostBlogs = blogs => {
 
     if(blogs.length === 0) return {}
-    
+
     const groutByAuthor = lodash.groupBy(blogs, 'author')
 
     const mapToCount = lodash.map(groutByAuthor, (blogs, author) => ({
@@ -24,6 +24,14 @@ const mostBlogs = blogs => {
     return maxBlogs
 }
 
-listHelper = { dummy, totalLikes, favoriteBlog, mostBlogs }
+const mostLikes = blogs => {
+    if(blogs.length === 0) return {}
+
+    const maxLikes = lodash.maxBy(blogs, 'likes')
+    console.log(maxLikes)
+    return { author: maxLikes.author, likes: maxLikes.likes }
+}
+
+listHelper = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes }
 
 module.exports = listHelper
