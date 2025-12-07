@@ -1,3 +1,4 @@
+const { response } = require('../app')
 const logger = require('./logger')
 
 const requestLogger = (request, response, next) => {
@@ -31,6 +32,14 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const middleware = { requestLogger, unKnownEndpoint, errorHandler }
+const tokenExtractor = (request, response, next) => {
+  const auth = request.get('authorization')
+  request.token = auth && auth.startsWith('Bearer ')
+    ? auth.replace('Bearer ', '')
+    : null
+  next()
+}
+
+const middleware = { requestLogger, unKnownEndpoint, errorHandler, tokenExtractor }
 
 module.exports = middleware
