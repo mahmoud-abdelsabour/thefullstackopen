@@ -3,6 +3,11 @@ const usersRouter = require('express').Router()
 const user = require('../models/user')
 const User = require('../models/user')
 
+usersRouter.get('/', async (request, response) => {
+    const users = await User.find({}).populate('blogs', {title: 1, author: 1, likes: 1, url: 1})
+    response.json(users)
+})
+
 usersRouter.post('/', async (request, response) => {
     const {username, name, password} = request.body
 
@@ -22,9 +27,5 @@ usersRouter.post('/', async (request, response) => {
     response.status(201).json(savedUser)
 })
 
-usersRouter.get('/', async (request, response) => {
-    const users = await User.find({})
-    response.json(users)
-})
 
 module.exports = usersRouter
