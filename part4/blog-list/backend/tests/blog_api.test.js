@@ -5,6 +5,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const { update } = require('lodash')
 
 const api = supertest(app)
 
@@ -40,6 +41,13 @@ describe('GET Request tests', () => {
 
         assert.deepStrictEqual(resultBlog.body, blogToView)
     })
+
+    test('fails with statuscode 404 if note does not exist', async () => {
+      const validNonexistingId = await helper.nonExistingId()
+
+      await api.get(`/api/notes/${validNonexistingId}`).expect(404)
+    })
+
 })
 
 describe('POST Resquest tests', () => {
@@ -79,7 +87,7 @@ describe('POST Resquest tests', () => {
         assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].likes, 0)
     })
 
-    test.only('fails with 400 if title is missing', async () => {
+    test('fails with 400 if title is missing', async () => {
         const missingTitleBlog = {
             author: 'No title',
             url: 'blog.com/Notitle/blog808',
@@ -93,7 +101,7 @@ describe('POST Resquest tests', () => {
         assert.ok(response.body.error)
     })
 
-    test.only('fails with 400 if url is missing', async () => {
+    test('fails with 400 if url is missing', async () => {
     const missingUrlBlog = {
         title: 'no url blog',
         author: 'No Likes',
@@ -113,6 +121,42 @@ test('verifies that the unique identifier property of the blog posts is named id
     const response = await api.get('/api/blogs')
     const allHaveId = response.body.every(blog => 'id' in blog)
     assert.ok(allHaveId, 'the unique identifier is not named id')
+})
+
+test('a Blog can be DELETED', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map(t => t.title)
+    
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+    assert(!titles.includes(blogToDelete.title))
+})
+
+test.only('a Blog can be UPDATED', async () => {
+    const updatedBlog = 
+    {
+        title: 'Updated title',
+        author: 'Ahmed Farouk',
+        url: 'blog.com/farouk/blog333',
+        likes: 2000
+    }
+    const blogsAtStart = await helper.blogsInDb()
+
+    await api
+    .put(`/api/blogs/${blogsAtStart[0].id}`)
+    .send(updatedBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map(t => t.title)
+
+    assert.strictEqual(blogsAtStart.length, blogsAtEnd.length)
+    assert(titles.includes(updatedBlog.title))
 })
 
 after(async () => {
