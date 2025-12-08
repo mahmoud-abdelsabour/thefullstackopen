@@ -19,7 +19,7 @@ describe('when there is initially one user in db', () => {
         await user.save()
     })
 
-    describe.only('User Tests', () => {
+    describe('User Tests', () => {
         test('invalid user missing username', async () => {
             const usersAtStart = await helper.usersInDb()
 

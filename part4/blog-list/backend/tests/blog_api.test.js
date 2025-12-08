@@ -6,13 +6,31 @@ const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
 const { update } = require('lodash')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const api = supertest(app)
 
+let token
 
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(helper.initialBlogs)
+
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({username: 'root', passwordHash: passwordHash, name: 'rootName'})
+
+    await user.save()
+
+    const response = await api
+    .post('/api/login')
+    .send({username: 'root', password: 'sekret'})
+    .expect(200)
+
+    token = response.body.token
+    
 })
 
 describe('GET Request tests', () => {
@@ -50,7 +68,7 @@ describe('GET Request tests', () => {
 
 })
 
-describe('POST Resquest tests', () => {
+describe.only('POST Resquest tests', () => {
     test('a valid blog can be added', async () =>{
         const newBlog = 
         {
@@ -62,6 +80,7 @@ describe('POST Resquest tests', () => {
 
         await api
         .post('/api/blogs')
+        .set('Authorization', 'Bearer ' + token)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -81,7 +100,7 @@ describe('POST Resquest tests', () => {
             url: 'blog.com/NoLikes/blog808',
         }
 
-        await api.post('/api/blogs').send(newBlog)
+        await api.post('/api/blogs').set('Authorization', 'Bearer ' + token).send(newBlog)
 
         const blogsAtEnd = await helper.blogsInDb()
         assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].likes, 0)
@@ -94,7 +113,7 @@ describe('POST Resquest tests', () => {
             likes: 65
         }
 
-        const response = await api.post('/api/blogs')
+        const response = await api.post('/api/blogs').set('Authorization', 'Bearer ' + token)
             .send(missingTitleBlog)
             .expect(400)
 
@@ -108,7 +127,7 @@ describe('POST Resquest tests', () => {
         likes: 65
     }
 
-    const response = await api.post('/api/blogs')
+    const response = await api.post('/api/blogs').set('Authorization', 'Bearer ' + token)
         .send(missingUrlBlog)
         .expect(400)
 
