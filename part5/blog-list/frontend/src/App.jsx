@@ -9,7 +9,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('') 
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState({message: null, type: null})
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -40,14 +40,20 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
-    }catch{
-      setErrorMessage('wrong credentials')
+
+      setNotification({message: 'Login Successfully', type: 'ok'})
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification({message: null, type: null})
+      }, 5000)
+    }catch{
+      setNotification({message: 'wrong credentials', type: 'error'})
+      setTimeout(() => {
+        setNotification({message: null, type: null})
       }, 5000)
     }
+    setUsername('')
+    setPassword('')
+
   }
 
   const handleLogout = (event) => {
@@ -55,6 +61,11 @@ const App = () => {
 
     window.localStorage.removeItem('loggedUser')
     setUser(null)
+
+    setNotification({message: 'user logged out successfully', type: 'ok'})
+      setTimeout(() => {
+        setNotification({message: null, type: null})
+      }, 5000)
   }
 
   const addBlog = async event => {
@@ -69,12 +80,17 @@ const App = () => {
       const returnedBlog = await blogService.create(newBlogObject)
       setBlogs(blogs.concat(returnedBlog))
 
+      setNotification({message: `a new blog ${newBlogObject.title} by ${newBlogObject.author} added`, type: 'ok'})
+      setTimeout(() => {
+        setNotification({message: null, type: null})
+      }, 5000)
+
     }catch (error){
       console.log(error)
-      setErrorMessage(`Error adding blog ${error}`)
+      setNotification({ message: `Error adding blog ${error}`, type: 'error' })
 
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification({ message: null, type: null })
       }, 5000);
     }
 
@@ -87,7 +103,7 @@ const App = () => {
   if(user === null) {
     return(
       <form onSubmit={handleLogin}>
-        <Notification message={errorMessage} />
+        <Notification notification={notification} />
         <h2>Login</h2>
         <div>
           <label>
@@ -116,7 +132,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={errorMessage} />
+      <Notification notification={notification} />
 
       {user && (
         <div>
