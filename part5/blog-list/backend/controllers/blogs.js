@@ -54,11 +54,13 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', userExtractor, async (request, response) => {
+  const user = request.user
   const {title, author, url, likes} = request.body
   const blog = await Blog.findById(request.params.id)
 
   if(!blog) return response.status(404).end()
+  if(blog.user.toString() !== user._id.toString()) return response.status(401).json({ error: 'invalid token' })
 
   blog.title = title
   blog.author = author

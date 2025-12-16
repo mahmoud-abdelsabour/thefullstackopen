@@ -1,6 +1,6 @@
 import Togglable from './Togglable'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -10,6 +10,19 @@ const Blog = ({ blog }) => {
     marginBottom: 5
   }
 
+  const updateLikes = event => {
+    event.preventDefault()
+
+    const updatedBlogObject = {
+      author: blog.author,
+      title: blog.title,
+      url: blog.url,
+      likes: blog.likes + 1
+    }
+
+    updateBlog(blog.id, updatedBlogObject)
+  }
+
   return(
     <div style={blogStyle}>
       <div>
@@ -17,7 +30,7 @@ const Blog = ({ blog }) => {
       </div>
       <Togglable buttonLabel='view'>
         <strong>URL: </strong>{blog.url}<br/>
-        <strong>Likes: </strong>{blog.likes}<button>like</button><br/>
+        <strong>Likes: </strong>{blog.likes}<button onClick={updateLikes}>like</button><br/>
         <strong>Author: </strong>{blog.author}<br/>
       </Togglable>
     </div>
