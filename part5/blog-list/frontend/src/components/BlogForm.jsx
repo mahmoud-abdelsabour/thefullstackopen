@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+{/* 5.6 Blog List Frontend, step 6 is already done */}
 const BlogForm = ({ createBlog }) => {
 
     const [title, setTitle] = useState('')
