@@ -29,9 +29,9 @@ const Blog = ({ blog, updateBlog }) => {
         {blog.title} <strong>{blog.author}</strong>
       </div>
       <Togglable buttonLabel='view'>
-        <strong>URL: </strong>{blog.url}<br/>
-        <strong>Likes: </strong>{blog.likes}<button onClick={updateLikes}>like</button><br/>
-        <strong>Author: </strong>{blog.author}<br/>
+        {blog.url}<br/>
+        likes {blog.likes}<button onClick={updateLikes}>like</button><br/>
+        {blog.user.name}<br/>
       </Togglable>
     </div>
     
