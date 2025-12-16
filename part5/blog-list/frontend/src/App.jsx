@@ -88,7 +88,7 @@ const App = () => {
       const returnedBlog = await blogService.update(id, updatedBlogObject)
 
       setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog))
-      
+
     }catch(error){
       console.log(error)
       setNotification({message: `error in updating blog ${error}`, type: 'error'})
@@ -130,7 +130,9 @@ const App = () => {
 
       {/*blogs saved in db*/}
       <h2>blogs</h2>
-      {blogs.map(blog =>
+      {[...blogs]
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog =>
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
       )}
     </div>
