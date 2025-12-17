@@ -9,13 +9,13 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [notification, setNotification] = useState({message: null, type: null})
+  const [notification, setNotification] = useState({ message: null, type: null })
   const [user, setUser] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -39,14 +39,14 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
 
-      setNotification({message: 'Login Successfully', type: 'ok'})
+      setNotification({ message: 'Login Successfully', type: 'ok' })
       setTimeout(() => {
-        setNotification({message: null, type: null})
+        setNotification({ message: null, type: null })
       }, 5000)
     }catch{
-      setNotification({message: 'wrong credentials', type: 'error'})
+      setNotification({ message: 'wrong credentials', type: 'error' })
       setTimeout(() => {
-        setNotification({message: null, type: null})
+        setNotification({ message: null, type: null })
       }, 5000)
     }
   }
@@ -57,10 +57,10 @@ const App = () => {
     window.localStorage.removeItem('loggedUser')
     setUser(null)
 
-    setNotification({message: 'user logged out successfully', type: 'ok'})
-      setTimeout(() => {
-        setNotification({message: null, type: null})
-      }, 5000)
+    setNotification({ message: 'user logged out successfully', type: 'ok' })
+    setTimeout(() => {
+      setNotification({ message: null, type: null })
+    }, 5000)
   }
 
   const addBlog = async (newBlogObject) => {
@@ -69,9 +69,9 @@ const App = () => {
       const returnedBlog = await blogService.create(newBlogObject)
       setBlogs(blogs.concat(returnedBlog))
 
-      setNotification({message: `a new blog ${newBlogObject.title} by ${newBlogObject.author} added`, type: 'ok'})
+      setNotification({ message: `a new blog ${newBlogObject.title} by ${newBlogObject.author} added`, type: 'ok' })
       setTimeout(() => {
-        setNotification({message: null, type: null})
+        setNotification({ message: null, type: null })
       }, 5000)
 
     }catch (error){
@@ -80,7 +80,7 @@ const App = () => {
 
       setTimeout(() => {
         setNotification({ message: null, type: null })
-      }, 5000);
+      }, 5000)
     }
   }
 
@@ -92,11 +92,11 @@ const App = () => {
 
     }catch(error){
       console.log(error)
-      setNotification({message: `error in updating blog ${error}`, type: 'error'})
+      setNotification({ message: `error in updating blog ${error}`, type: 'error' })
 
       setTimeout(() => {
-        setNotification({message: null, type: null})
-      }, 5000);
+        setNotification({ message: null, type: null })
+      }, 5000)
     }
   }
 
@@ -105,17 +105,17 @@ const App = () => {
       const response = await blogService.deleteOne(id)
       setBlogs(blogs.filter(blog => blog.id !== id))
 
-      setNotification({message: 'blog has been successfully deleted', type: 'ok'})
+      setNotification({ message: 'blog has been successfully deleted', type: 'ok' })
       setTimeout(() => {
-        setNotification({message: null, type: null})
-      }, 5000);
+        setNotification({ message: null, type: null })
+      }, 5000)
     }catch(error){
       console.log(error)
-      setNotification({message: `error deleting the blog ${error}`, type: 'error'})
-      
+      setNotification({ message: `error deleting the blog ${error}`, type: 'error' })
+
       setTimeout(() => {
-        setNotification({message: null, type: null})
-      }, 5000);
+        setNotification({ message: null, type: null })
+      }, 5000)
     }
   }
 
@@ -135,7 +135,7 @@ const App = () => {
     <div>
       <Notification notification={notification} />
 
-      
+
       {/*Login form and Logged in user*/}
       {!user && loginForm()}
       {user && (
@@ -146,15 +146,15 @@ const App = () => {
         </div>
       )}
 
-      
+
 
       {/*blogs saved in db*/}
       <h2>blogs</h2>
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteOne={deleteBlog} user={user}/>
-      )}
+          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteOne={deleteBlog} user={user}/>
+        )}
     </div>
   )
 }

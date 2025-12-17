@@ -40,10 +40,10 @@ const Blog = ({ blog, updateBlog, deleteOne, user }) => {
         {blog.url}<br/>
         likes {blog.likes}<button onClick={updateLikes}>like</button><br/>
         {blog.user.name}<br/>
-        <button style={{display: !user ? 'none' : blog.user.id === user.id ? '' : 'none'}} onClick={deleteBlog}>delete</button>
+        <button style={{ display: !user ? 'none' : blog.user.id === user.id ? '' : 'none' }} onClick={deleteBlog}>delete</button>
       </Togglable>
     </div>
-    
+
   )
 }
 
