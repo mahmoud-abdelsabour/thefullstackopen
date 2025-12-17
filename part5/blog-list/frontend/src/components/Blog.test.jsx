@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import Blog from './Blog'
+import userEvent from '@testing-library/user-event'
 
-test('renders content', () => {
-    const blog = {
+const blog = 
+    {
         title: 'test blog',
         author: 'John Doe',
         url: 'test.com/johndoe',
@@ -13,6 +14,9 @@ test('renders content', () => {
             id: 'fds5a49615fds'
         }
     }
+
+test('renders content', () => {
+    
 
     render(<Blog blog={blog} />)
 
@@ -29,5 +33,21 @@ test('renders content', () => {
 
     expect(likesElement).not.toBeVisible()
     expect(urlElement).not.toBeVisible()
+
+})
+
+test.only('checks that the blog URL and likes are shown when the button has been clicked', async () => {
+
+    render(<Blog blog={blog}/>)
+
+    const user = userEvent.setup()
+    const button = screen.getByText('view')
+    await user.click(button)
+
+    const likesElement = screen.getByText('likes', { exact: false })
+    const urlElement = screen.getByText('test.com/johndoe', { exact: false })
+
+    expect(likesElement).toBeVisible()
+    expect(urlElement).toBeVisible()
 
 })
