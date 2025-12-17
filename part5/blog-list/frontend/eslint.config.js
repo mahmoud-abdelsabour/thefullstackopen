@@ -5,6 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
   { ignores: ['dist'] },
+
+  //main config
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -37,6 +39,16 @@ export default [
       'object-curly-spacing': ['error', 'always'],
       'arrow-spacing': ['error', { before: true, after: true }],
       'no-console': 'off'
+    }
+  },
+  // test files (Vitest)
+  {
+    files: ['**/*.test.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.vitest
+      }
     }
   }
 ]
