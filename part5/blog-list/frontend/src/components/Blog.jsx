@@ -1,6 +1,6 @@
 import Togglable from './Togglable'
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, deleteOne, user }) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -23,6 +23,14 @@ const Blog = ({ blog, updateBlog }) => {
     updateBlog(blog.id, updatedBlogObject)
   }
 
+  const deleteBlog = event => {
+    if(window.confirm(`Delete ${blog.title} by ${blog.author} ?!`))
+    {
+      event.preventDefault()
+      deleteOne(blog.id)
+    }
+  }
+
   return(
     <div style={blogStyle}>
       <div>
@@ -32,6 +40,7 @@ const Blog = ({ blog, updateBlog }) => {
         {blog.url}<br/>
         likes {blog.likes}<button onClick={updateLikes}>like</button><br/>
         {blog.user.name}<br/>
+        <button style={{display: !user ? 'none' : blog.user.id === user.id ? '' : 'none'}} onClick={deleteBlog}>delete</button>
       </Togglable>
     </div>
     

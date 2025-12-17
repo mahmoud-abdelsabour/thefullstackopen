@@ -99,6 +99,25 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (id) => {
+    try{
+      const response = await blogService.deleteOne(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+
+      setNotification({message: 'blog has been successfully deleted', type: 'ok'})
+      setTimeout(() => {
+        setNotification({message: null, type: null})
+      }, 5000);
+    }catch(error){
+      console.log(error)
+      setNotification({message: `error deleting the blog ${error}`, type: 'error'})
+      
+      setTimeout(() => {
+        setNotification({message: null, type: null})
+      }, 5000);
+    }
+  }
+
   const loginForm = () => (
     <LoginForm loginRequest = {handleLogin}/>
   )
@@ -133,7 +152,7 @@ const App = () => {
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteOne={deleteBlog} user={user}/>
       )}
     </div>
   )
