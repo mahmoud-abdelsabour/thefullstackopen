@@ -52,7 +52,7 @@ test('checks that the blog URL and likes are shown when the button has been clic
 
 })
 
-test.only('ensures that if the like button is clicked twice, the event handler is called twice.', async () => {
+test('ensures that if the like button is clicked twice, the event handler is called twice.', async () => {
     const mockHandler = vi.fn()
 
     render(<Blog blog={blog} updateBlog={mockHandler}/>)
