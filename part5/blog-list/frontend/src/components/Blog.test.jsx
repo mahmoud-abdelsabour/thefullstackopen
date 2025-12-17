@@ -36,7 +36,7 @@ test('renders content', () => {
 
 })
 
-test.only('checks that the blog URL and likes are shown when the button has been clicked', async () => {
+test('checks that the blog URL and likes are shown when the button has been clicked', async () => {
 
     render(<Blog blog={blog}/>)
 
@@ -50,4 +50,17 @@ test.only('checks that the blog URL and likes are shown when the button has been
     expect(likesElement).toBeVisible()
     expect(urlElement).toBeVisible()
 
+})
+
+test.only('ensures that if the like button is clicked twice, the event handler is called twice.', async () => {
+    const mockHandler = vi.fn()
+
+    render(<Blog blog={blog} updateBlog={mockHandler}/>)
+
+    const user = userEvent.setup()
+    const button = screen.getByText('like')
+    await user.click(button)
+    await user.click(button)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
 })
