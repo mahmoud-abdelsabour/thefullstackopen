@@ -1,17 +1,19 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
 
-        await request.post('http://localhost:3001/api/testing/reset')
-        await request.post('http://localhost:3001/api/users', {
+        await request.post('/api/testing/reset')
+        await request.post('/api/users', {
             data: {
                 name: 'root',
                 username: 'rootuser',
                 password: 'root'
             }
         })
-        await page.goto('http://localhost:5173')
+
+        await page.goto('/')
     })
 
     test('Login form is shown', async ({ page }) => {
@@ -21,17 +23,12 @@ describe('Blog app', () => {
 
     describe('Login', () => {
         test('succeeds with correct credentials', async ({ page }) => {
-            await page.getByLabel('username').fill('rootuser')
-            await page.getByLabel('password').fill('root')
-            await page.getByRole('button', { name: 'login' }).click()
-
+            await loginWith(page, 'rootuser', 'root')
             await expect(page.getByText('root logged in')).toBeVisible()
         })
 
         test('fails with wrong credentials', async ({ page }) => {
-            await page.getByLabel('username').fill('rootuser')
-            await page.getByLabel('password').fill('wrong')
-            await page.getByRole('button', { name: 'login' }).click()
+            await loginWith(page, 'rootuser', 'wrong')
 
             await expect(page.getByText('wrong credentials')).toBeVisible()
         })
@@ -39,18 +36,12 @@ describe('Blog app', () => {
 
     describe('When logged in', () => {
         beforeEach(async ({ page }) => {
-            await page.getByLabel('username').fill('rootuser')
-            await page.getByLabel('password').fill('root')
-            await page.getByRole('button', { name: 'login' }).click()
+            await loginWith(page, 'rootuser', 'root')
+
         })
 
         test('a new blog can be created', async ({ page }) => {
-            await page.getByRole('button', { name: 'Create New Blog' }).click()
-            await page.getByLabel('Title').fill('test blog')
-            await page.getByLabel('Author').fill('John Doe')
-            await page.getByLabel('URL').fill('example.com')
-            await page.getByRole('button', { name: 'Add' }).click()
-
+            await createBlog(page, 'test blog', 'John Doe', 'example.com')
             await expect(page.locator('div.title.and.author.div').getByText('test blog')).toBeVisible()
         })
     })
@@ -58,17 +49,10 @@ describe('Blog app', () => {
     describe('When logged in and blog is created', () => {
         beforeEach(async ({ page }) => {
             //login
-            await page.getByLabel('username').fill('rootuser')
-            await page.getByLabel('password').fill('root')
-            await page.getByRole('button', { name: 'login' }).click()
+            await loginWith(page, 'rootuser', 'root')
 
             //create a blog
-            await page.getByRole('button', { name: 'Create New Blog' }).click()
-            await page.getByLabel('Title').fill('test blog')
-            await page.getByLabel('Author').fill('John Doe')
-            await page.getByLabel('URL').fill('example.com')
-            await page.getByRole('button', { name: 'Add' }).click()
-
+            await createBlog(page, 'test blog', 'John Doe', 'example.com')
         })
 
         test('blog can be liked', async ({ page }) => {
@@ -82,7 +66,7 @@ describe('Blog app', () => {
             await expect(likesLocator).toHaveText(`${likesBefore + 1}`)
         })
 
-        test.only('a blog can be deleted by its creator', async ({ page }) => {
+        test('a blog can be deleted by its creator', async ({ page }) => {
             await page.getByRole('button', { name: 'view' }).click()
 
             page.on('dialog', async (dialog) => {
@@ -93,6 +77,29 @@ describe('Blog app', () => {
             await page.getByRole('button', { name: 'delete' }).click()
 
             await expect(page.getByText('test blog')).toHaveCount(0)
+
+        })
+
+        test('only the user who created the blog can see the delete button', async ({ page, request }) => {
+            await request.post('/api/users', {
+                data: {
+                    name: 'admin',
+                    username: 'adminuser',
+                    password: 'admin'
+                }
+
+            })
+
+            await page.getByRole('button', { name: 'Logout' }).click()
+
+            await loginWith(page, 'adminuser', 'admin')
+            await page.getByRole('button', { name: 'view' }).click()
+
+            await expect(
+            page.getByRole('button', { name: 'delete' })
+            ).toBeHidden()
+
+
 
         })
     })
