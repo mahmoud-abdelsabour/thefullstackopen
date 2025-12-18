@@ -81,6 +81,20 @@ describe('Blog app', () => {
 
             await expect(likesLocator).toHaveText(`${likesBefore + 1}`)
         })
+
+        test.only('a blog can be deleted by its creator', async ({ page }) => {
+            await page.getByRole('button', { name: 'view' }).click()
+
+            page.on('dialog', async (dialog) => {
+                expect(dialog.message()).toBe('Delete test blog by John Doe ?!')
+                await dialog.accept()
+            })
+
+            await page.getByRole('button', { name: 'delete' }).click()
+
+            await expect(page.getByText('test blog')).toHaveCount(0)
+
+        })
     })
 
 })
