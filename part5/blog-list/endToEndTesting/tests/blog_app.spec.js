@@ -55,4 +55,32 @@ describe('Blog app', () => {
         })
     })
 
+    describe('When logged in and blog is created', () => {
+        beforeEach(async ({ page }) => {
+            //login
+            await page.getByLabel('username').fill('rootuser')
+            await page.getByLabel('password').fill('root')
+            await page.getByRole('button', { name: 'login' }).click()
+
+            //create a blog
+            await page.getByRole('button', { name: 'Create New Blog' }).click()
+            await page.getByLabel('Title').fill('test blog')
+            await page.getByLabel('Author').fill('John Doe')
+            await page.getByLabel('URL').fill('example.com')
+            await page.getByRole('button', { name: 'Add' }).click()
+
+        })
+
+        test('blog can be liked', async ({ page }) => {
+            await page.getByRole('button', { name: 'view' }).click()
+
+            const likesLocator = page.getByTestId('likes')
+            const likesBefore = parseInt(await likesLocator.textContent())
+
+            await page.getByRole('button', { name: 'like' }).click()
+
+            await expect(likesLocator).toHaveText(`${likesBefore + 1}`)
+        })
+    })
+
 })

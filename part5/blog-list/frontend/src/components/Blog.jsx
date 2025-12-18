@@ -39,7 +39,7 @@ const Blog = ({ blog, updateBlog, deleteOne, user }) => {
       <Togglable buttonLabel='view'>
         <div className='togglable blog info'>
           {blog.url}<br/>
-          likes {blog.likes}<button onClick={updateLikes}>like</button><br/>
+          likes <span data-testid='likes'>{blog.likes}</span> <button onClick={updateLikes}>like</button><br/>
           {blog.user.name}<br/>
           <button style={{ display: !user ? 'none' : blog.user.id === user.id ? '' : 'none' }} onClick={deleteBlog}>delete</button>
         </div>
