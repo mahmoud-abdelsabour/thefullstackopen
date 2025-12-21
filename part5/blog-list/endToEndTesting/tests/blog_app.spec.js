@@ -1,10 +1,13 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, likeBlog, clickTimes } = require('./helper')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
 
+        //reset database
         await request.post('/api/testing/reset')
+        
+        //create user
         await request.post('/api/users', {
             data: {
                 name: 'root',
@@ -29,7 +32,6 @@ describe('Blog app', () => {
 
         test('fails with wrong credentials', async ({ page }) => {
             await loginWith(page, 'rootuser', 'wrong')
-
             await expect(page.getByText('wrong credentials')).toBeVisible()
         })
     })
@@ -101,6 +103,34 @@ describe('Blog app', () => {
 
 
 
+        })
+
+    })
+    describe('--', () => {
+        beforeEach( async ({ page }) => {
+            await loginWith(page, 'rootuser', 'root')
+
+            await createBlog(page, 'first', 'root', 'sorting.com')
+            await createBlog(page, 'second', 'root', 'sorting.com')
+            await createBlog(page, 'third', 'root', 'sorting.com')
+
+            await likeBlog(page, 'first', 3)
+            await likeBlog(page, 'second', 2)
+            await likeBlog(page, 'third', 1)
+
+        })
+        test('ensures that the blogs are arranged in the order according to the likes', async ({ page }) => {
+        
+            const blogs = page.getByTestId('blog')
+    
+            const likes = await blogs.evaluateAll(nodes =>
+                nodes.map(blog =>
+                Number(blog.querySelector('[data-testid="likes"]').textContent.trim())
+                )
+            )
+    
+            const sortedLikes = [...likes].sort((a, b) => b - a)
+            expect(likes).toEqual(sortedLikes)
         })
     })
 

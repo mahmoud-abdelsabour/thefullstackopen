@@ -32,7 +32,7 @@ const Blog = ({ blog, updateBlog, deleteOne, user }) => {
   }
 
   return(
-    <div style={blogStyle}>
+    <div style={blogStyle} data-testid='blog'>
       <div className='title and author div'>
         {blog.title} <strong>{blog.author}</strong>
       </div>
