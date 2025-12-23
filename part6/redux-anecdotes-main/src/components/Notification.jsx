@@ -9,7 +9,8 @@ const Notification = () => {
     borderWidth: 1,
     marginBottom: 10
   }
-
+  
+  if(!message) return null
   return <div style={style}> {message} </div>
 }
 
