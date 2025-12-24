@@ -57,11 +57,12 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification notification={notification} />
 
       <Routes>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
-        <Route path="/create" element={<AnecdoteForm addNew={addNew} />} />
+        <Route path="/create" element={<AnecdoteForm addNew={addNew} setNotification={setNotification} />} />
         <Route path="/about" element={<About />} />
       </Routes>
 
