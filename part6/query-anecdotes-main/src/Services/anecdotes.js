@@ -27,7 +27,7 @@ const create = async (anecdote) => {
 }
 
 const update = async (anecdote) => {
-    const response = await fetch(baseUrl, getOptions('PUT', anecdote))
+    const response = await fetch(`${baseUrl}/${anecdote.id}`, getOptions('PUT', anecdote))
     checkResponse(response)
     return await response.json()
 }

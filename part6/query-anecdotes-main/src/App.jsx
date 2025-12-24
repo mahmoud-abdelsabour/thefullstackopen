@@ -13,6 +13,11 @@ const App = () => {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['anecdotes'] }) }
   })
 
+  const updatedAnecdoteMutation = useMutation({
+    mutationFn: anecdoteService.update,
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['anecdotes'] }) }
+  })
+
   const result = useQuery({
     queryKey: ['anecdotes'],
     queryFn: anecdoteService.get,
@@ -37,7 +42,7 @@ const App = () => {
 
       <Notification />
       <AnecdoteForm newAnecdoteMutation={newAnecdoteMutation} />
-      <AnecdoteList anecdotes={anecdotes} />
+      <AnecdoteList anecdotes={anecdotes} updatedAnecdoteMutation={updatedAnecdoteMutation} />
 
     </div>
   )
