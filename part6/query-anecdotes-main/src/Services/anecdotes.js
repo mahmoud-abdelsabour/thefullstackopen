@@ -1,8 +1,11 @@
 const baseUrl = 'http://localhost:3001/anecdotes'
 
 //helper functions
-const checkResponse = res =>{
-    if(!res.ok) throw new Error('failed to get anecdotes')
+const checkResponse = async (res) =>{
+    if(!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'request failed')
+    }
 }
 
 const getOptions = (method, data) => (
@@ -16,19 +19,19 @@ const getOptions = (method, data) => (
 //requests
 const get = async () => {
     const response = await fetch(baseUrl)
-    checkResponse(response)
+    await checkResponse(response)
     return await response.json()
 }
 
 const create = async (anecdote) => {
     const response = await fetch(baseUrl, getOptions('POST', anecdote))
-    checkResponse(response)
+    await checkResponse(response)
     return await response.json()
 }
 
 const update = async (anecdote) => {
     const response = await fetch(`${baseUrl}/${anecdote.id}`, getOptions('PUT', anecdote))
-    checkResponse(response)
+    await checkResponse(response)
     return await response.json()
 }
 
