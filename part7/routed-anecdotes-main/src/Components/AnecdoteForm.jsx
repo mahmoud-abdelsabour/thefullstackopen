@@ -28,22 +28,30 @@ const AnecdoteForm = (props) => {
 
     return (
         <div>
-        <h2>create a new anecdote</h2>
-        <form onSubmit={handleSubmit}>
-            <div>
-            content
-            <input {...content} />
-            </div>
-            <div>
-            author
-            <input {...author} />
-            </div>
-            <div>
-            url for more info
-            <input {...info} />
-            </div>
-            <button>create</button>
-        </form>
+            <h2>create a new anecdote</h2>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    content
+                    <input {...content} />
+                </div>
+                <div>
+                    author
+                    <input {...author} />
+                </div>
+                <div>
+                    url for more info
+                    <input {...info} />
+                </div>
+                <button type="submit" >create</button>
+                <button type="button" onClick={() => 
+                        {
+                            author.reset()
+                            content.reset()
+                            info.reset()
+                        } 
+                    }>
+                    reset</button>
+            </form>
         </div>
     )
 
