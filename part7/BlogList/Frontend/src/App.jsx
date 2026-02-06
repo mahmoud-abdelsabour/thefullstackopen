@@ -1,5 +1,5 @@
 import { useState, useEffect, createRef } from 'react'
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
@@ -9,16 +9,18 @@ import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
+import { appendBlog, initBlogs } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const [blogss, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
+  const blogs = useSelector(state => state.blogs)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    dispatch(initBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -45,8 +47,7 @@ const App = () => {
   }
 
   const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog)
-    setBlogs(blogs.concat(newBlog))
+    dispatch(appendBlog(blog))
     notify(`Blog created: ${newBlog.title}, ${newBlog.author}`)
     blogFormRef.current.toggleVisibility()
   }
@@ -91,15 +92,19 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+
       <Notification/>
+
       <div>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </div>
+
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
       </Togglable>
-      {blogs.sort(byLikes).map((blog) => (
+
+      {[...blogs].sort(byLikes).map((blog) => (
         <Blog
           key={blog.id}
           blog={blog}
