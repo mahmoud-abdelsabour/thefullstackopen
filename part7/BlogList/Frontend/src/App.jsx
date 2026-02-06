@@ -9,10 +9,9 @@ import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
-import { appendBlog, initBlogs } from './reducers/blogReducer'
+import { appendBlog, initBlogs, removeBlog, modifyBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogss, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
   const blogs = useSelector(state => state.blogs)
@@ -54,13 +53,13 @@ const App = () => {
 
   const handleVote = async (blog) => {
     console.log('updating', blog)
-    const updatedBlog = await blogService.update(blog.id, {
+    const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
-    })
+    }
 
+    dispatch(modifyBlog(updatedBlog))
     notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`)
-    setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)))
   }
 
   const handleLogout = () => {
@@ -71,8 +70,7 @@ const App = () => {
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
+      dispatch(removeBlog(blog.id))
       notify(`Blog ${blog.title}, by ${blog.author} removed`)
     }
   }
