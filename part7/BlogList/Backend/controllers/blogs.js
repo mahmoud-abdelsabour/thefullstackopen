@@ -1,0 +1,88 @@
+const jwt = require('jsonwebtoken')
+const router = require('express').Router()
+const Blog = require('../models/blog')
+const User = require('../models/user')
+const userExtractor = require('../utils/middleware').userExtractor
+
+router.get('/', async (request, response) => {
+  const blogs = await Blog
+    .find({}).populate('user', { username: 1, name: 1 })
+
+  response.json(blogs)
+})
+
+router.post('/', userExtractor, async (request, response) => {
+  const blog = new Blog(request.body)
+
+  const user = request.user
+
+  if (!user ) {
+    return response.status(403).json({ error: 'user missing' })
+  }
+
+  if (!blog.title || !blog.url ) {
+    return response.status(400).json({ error: 'title or url missing' })
+  }
+
+  blog.likes = blog.likes | 0
+  blog.user = user
+
+  user.blogs = user.blogs.concat(blog._id)
+
+  await user.save()
+
+  const savedBlog = await blog.save()
+
+  response.status(201).json(savedBlog)
+})
+
+
+router.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
+  const blog = await Blog.findById(request.params.id)
+  console.log(`blog ${blog}`)
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+  
+  if (blog.user.toString() !== user.id.toString()) {
+    return response.status(403).json({ error: 'user not authorized' })
+  }
+  
+  await Blog.findByIdAndDelete(blog.id)
+  
+  user.blogs = user.blogs.filter(b => b.toString() !== blog.id)
+  await user.save()
+  
+  response.status(204).end()
+})
+
+router.put('/:id', userExtractor, async (request, response) => {
+  const user = request.user
+  const body = request.body
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+
+  if (blog.user.toString() !== user.id.toString()) {
+    return response.status(403).json({ error: 'user not authorized' })
+  }
+
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes
+    },
+    { new: true }
+  ).populate('user', { username: 1, name: 1 })
+
+  response.json(updatedBlog)
+})
+
+
+module.exports = router
