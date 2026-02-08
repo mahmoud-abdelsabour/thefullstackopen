@@ -319,7 +319,7 @@ View MD files in VS-Code
 CTRL+SHIFT+V
 ```
 
-## Security
+## 🔐 Security
 ```bash
 npm audit
 npm audit fix
@@ -327,7 +327,7 @@ npm outdated --depth 0 //You can check how up-to-date your dependencies are usin
 npm install -g npm-check-updates
 ncu -u
 ```
-## Pretier
+## 💄 Prettier
 install
 ```bash
 npm install --save-dev --save-exact prettier
@@ -347,6 +347,19 @@ npm i -D eslint-config-prettier
 format all files with prettier
 ```bash
 npx prettier . --write
+```
+---
+
+## 👨‍💼 State Mgmt in React Apps
+
+* useState
+* Redux
+* useReducer + Context
+* Tanstack React Query
+---
+# Tanstack React Query
+```bash
+npm install @tanstack/react-query
 ```
 ---
 ✅ Cleaned, structured, and course-aligned ✨

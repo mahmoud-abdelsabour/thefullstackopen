@@ -1,0 +1,146 @@
+import { useState, useEffect, createRef, useContext } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import blogService from './services/blogs'
+import loginService from './services/login'
+import storage from './services/storage'
+import Login from './components/Login'
+import Blog from './components/Blog'
+import NewBlog from './components/NewBlog'
+import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import NotificationContext from './NotificationContext'
+import UserContext from './UserContext'
+
+const App = () => {
+  const {notification, notificationDispatch} = useContext(NotificationContext)
+  const {user, userDispatch} = useContext(UserContext)
+
+  const queryClient = useQueryClient()
+
+  const blogsData = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    refetchOnWindowFocus: false
+  })
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
+    }
+  })
+
+  const updateBlogMutation = useMutation({
+    mutationFn: (blog) => blogService.update(blog.id, blog),
+    onSuccess: (updatedBlog) => {
+      queryClient.setQueryData(['blogs'], (old = []) =>
+        old.map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
+      )
+    },
+  })
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: (id) => blogService.remove(id),
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(['blogs'], (old = []) =>
+        old.filter((b) => (b.id !== id))
+      )
+    },
+  })
+  
+  useEffect(() => {
+    const user = storage.loadUser()
+    if (user) {
+      userDispatch({type: 'set', payload: user})
+    }
+  }, [])
+
+  if(blogsData.isLoading){
+    return <div>loading data...</div>
+  }
+
+  const blogs = blogsData.data
+
+  const blogFormRef = createRef()
+
+  const notify = (message, type = 'success') => {
+    notificationDispatch({type: 'set', payload: {message, type}})
+    setTimeout(() => {
+      notificationDispatch({type: 'clear'})
+    }, 5000)
+  }
+
+  const handleLogin = async (credentials) => {
+    try {
+      const user = await loginService.login(credentials)
+      userDispatch({type: 'set', payload: user})
+      storage.saveUser(user)
+      notify(`Welcome back, ${user.name}`)
+    } catch (error) {
+      notify('Wrong credentials', 'error')
+    }
+  }
+
+  const handleCreate = async (blog) => {
+    newBlogMutation.mutate(blog)
+    notify(`Blog created: ${blog.title}, ${blog.author}`)
+    blogFormRef.current.toggleVisibility()
+  }
+
+  const handleVote = async (blog) => {
+    console.log('updating', blog)
+    updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
+    notify(`You liked ${blog.title} by ${blog.author}`)
+  }
+
+  const handleLogout = () => {
+    userDispatch({type: 'clear'})
+    storage.removeUser()
+    notify(`Bye, ${user.name}!`)
+  }
+
+  const handleDelete = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      deleteBlogMutation.mutate(blog.id)
+      notify(`Blog ${blog.title}, by ${blog.author} removed`)
+    }
+  }
+
+  if (!user) {
+    return (
+      <div>
+        <h2>blogs</h2>
+        <Notification notification={notification} />
+        <Login doLogin={handleLogin} />
+      </div>
+    )
+  }
+
+
+  const byLikes = (a, b) => b.likes - a.likes
+
+  return (
+    <div>
+      <h2>blogs</h2>
+      <Notification notification={notification} />
+      <div>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button>
+      </div>
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+        <NewBlog doCreate={handleCreate} />
+      </Togglable>
+      {blogs.sort(byLikes).map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleVote={handleVote}
+          handleDelete={handleDelete}
+        />
+      ))}
+    </div>
+  )
+}
+
+export default App
