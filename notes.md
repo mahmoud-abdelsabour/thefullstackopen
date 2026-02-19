@@ -50,6 +50,7 @@ npm run dev
 ```bash
 npm install axios
 npm install json-server --save-dev
+npm install react-router-dom
 ```
 
 ---

@@ -4,12 +4,15 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
 import Login from './components/Login'
-import Blog from './components/Blog'
+import Blogs from './components/Blogs'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 import NotificationContext from './NotificationContext'
 import UserContext from './UserContext'
+import { Link, Routes, Route } from 'react-router-dom'
+import userService from "./services/users"
 
 const App = () => {
   const {notification, notificationDispatch} = useContext(NotificationContext)
@@ -20,6 +23,12 @@ const App = () => {
   const blogsData = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
+    refetchOnWindowFocus: false
+  })
+
+  const usersData = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
     refetchOnWindowFocus: false
   })
 
@@ -61,6 +70,7 @@ const App = () => {
   }
 
   const blogs = blogsData.data
+  const users = usersData.data
 
   const blogFormRef = createRef()
 
@@ -88,11 +98,6 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
   }
 
-  const handleVote = async (blog) => {
-    console.log('updating', blog)
-    updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
-    notify(`You liked ${blog.title} by ${blog.author}`)
-  }
 
   const handleLogout = () => {
     userDispatch({type: 'clear'})
@@ -100,7 +105,7 @@ const App = () => {
     notify(`Bye, ${user.name}!`)
   }
 
-  const handleDelete = async (blog) => {
+  const handleDelete = (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       deleteBlogMutation.mutate(blog.id)
       notify(`Blog ${blog.title}, by ${blog.author} removed`)
@@ -118,27 +123,40 @@ const App = () => {
   }
 
 
-  const byLikes = (a, b) => b.likes - a.likes
 
-  return (
+  const Home = () => (
     <div>
-      <h2>blogs</h2>
-      <Notification notification={notification} />
       <div>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </div>
+
+      <h2>blogs</h2>
+      
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
       </Togglable>
-      {blogs.sort(byLikes).map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
-      ))}
+      <Blogs blogs={blogs}/>
+        
+    </div>
+  )
+
+  return (
+    <div>
+      <Notification notification={notification} />
+
+      <div>
+        <Link to="/">Home </Link>
+        <Link to="/users">Users</Link>
+      </div>
+
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="users" element={<Users users={users}/>}/>
+      </Routes>
+
+
+      
     </div>
   )
 }
