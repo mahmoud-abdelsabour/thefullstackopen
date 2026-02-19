@@ -9,9 +9,10 @@ import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
+import User from './components/User'
 import NotificationContext from './NotificationContext'
 import UserContext from './UserContext'
-import { Link, Routes, Route } from 'react-router-dom'
+import { Link, Routes, Route, useMatch } from 'react-router-dom'
 import userService from "./services/users"
 
 const App = () => {
@@ -31,6 +32,14 @@ const App = () => {
     queryFn: userService.getAll,
     refetchOnWindowFocus: false
   })
+
+  const blogs = blogsData.data ?? []
+  const users = usersData.data ?? []
+
+  const match = useMatch('/users/:id')
+  const matchedUser = match
+    ? users.find(user => user.id === match.params.id)
+    : null
 
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,
@@ -69,9 +78,6 @@ const App = () => {
     return <div>loading data...</div>
   }
 
-  const blogs = blogsData.data
-  const users = usersData.data
-
   const blogFormRef = createRef()
 
   const notify = (message, type = 'success') => {
@@ -80,7 +86,7 @@ const App = () => {
       notificationDispatch({type: 'clear'})
     }, 5000)
   }
-
+  
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials)
@@ -111,6 +117,7 @@ const App = () => {
       notify(`Blog ${blog.title}, by ${blog.author} removed`)
     }
   }
+  
 
   if (!user) {
     return (
@@ -126,12 +133,6 @@ const App = () => {
 
   const Home = () => (
     <div>
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
-
-      <h2>blogs</h2>
       
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
@@ -141,18 +142,28 @@ const App = () => {
     </div>
   )
 
+
   return (
     <div>
       <Notification notification={notification} />
 
       <div>
-        <Link to="/">Home </Link>
+        <Link to="/">Home - </Link>
         <Link to="/users">Users</Link>
       </div>
+
+      <div>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button>
+      </div>
+
+      <h2>blogs</h2>
+
 
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="users" element={<Users users={users}/>}/>
+        <Route path="users/:id" element={<User user={matchedUser}/>}/>
       </Routes>
 
 
