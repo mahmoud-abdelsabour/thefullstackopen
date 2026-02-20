@@ -152,14 +152,14 @@ const App = () => {
   return (
     <div>
       <Notification notification={notification} />
-
+      //the navigation menu is already implemented
       <div>
         <Link to="/">Home - </Link>
         <Link to="/users">Users</Link>
       </div>
 
       <h2>blogs</h2>
-      
+
       <div>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
