@@ -6,7 +6,7 @@ const Blogs = ({blogs}) => {
     return(
         <ul>
             {blogs.sort(byLikes).map((blog) => (
-                <li>
+                <li key={blog.id}>
                     <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
                 </li>
             ))}

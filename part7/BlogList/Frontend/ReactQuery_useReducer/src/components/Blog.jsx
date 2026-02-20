@@ -1,12 +1,14 @@
 import React, { useState, useContext } from 'react'
-import PropTypes from 'prop-types'
 import storage from '../services/storage'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import blogService from '../services/blogs'
 import NotificationContext from '../NotificationContext'
 
 const Blog = ({ blog }) => {
   const {notificationDispatch} = useContext(NotificationContext)
+  const [comment, setComment] =useState('')
+  const comments = blog?.comments ?? []
+  const queryClient = useQueryClient()
 
   const updateBlogMutation = useMutation({
     mutationFn: (blog) => blogService.update(blog.id, blog),
@@ -26,6 +28,14 @@ const Blog = ({ blog }) => {
     },
   })
 
+  const commentBlogMutation = useMutation({
+    mutationFn: ({id, comment}) => blogService.comment(id, comment),
+    onSuccess: (commentedBlog) => {
+      queryClient.setQueryData(['blogs'], (old = []) =>
+      old.map((b) => (b.id === commentedBlog.id ? commentedBlog : b)))
+    }
+  })
+
   const handleVote = (blog) => {
     console.log('updating', blog)
     updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
@@ -43,6 +53,14 @@ const Blog = ({ blog }) => {
         notificationDispatch({type: 'clear'})
       }, 5000)
     }
+  }
+
+  const handleComment = (event) => {
+    event.preventDefault()
+    const cmt = comment.trim()
+    if(!cmt) return
+    commentBlogMutation.mutate({id: blog.id, comment: cmt})
+    setComment('')
   }
 
   const nameOfUser = blog.user ? blog.user.name : 'anonymous'
@@ -78,6 +96,24 @@ const Blog = ({ blog }) => {
       </div>
       
       <div>added by {blog.user.name}</div>
+
+      <h3>comments</h3>
+
+      <ul>
+        {comments.map((comment, i) => (
+          <li key={`${blog.id}-${i}`}>{comment}</li>
+        ))}
+      </ul>
+
+      <form onSubmit={handleComment}>
+        <input 
+        type='text'
+        value={comment} onChange={(e) => setComment(e.target.value)}/>
+        <button type='submit'>send</button>
+      </form>
+
+
+
       {canRemove && (
         <button onClick={() => handleDelete(blog)}>remove</button>
       )}
@@ -88,13 +124,6 @@ const Blog = ({ blog }) => {
   )
 }
 
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    url: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    user: PropTypes.object,
-  }).isRequired,
-}
+
 
 export default Blog

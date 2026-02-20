@@ -44,7 +44,7 @@ const App = () => {
 
   const blogMatch = useMatch('/blogs/:id')
   const matchedBlog = blogMatch
-    ? blogs.find(blog => blog.id === blogMatch.params.id)
+    ? blogs.find(blog => String(blog.id) === String(blogMatch.params.id))
     : null
 
   const newBlogMutation = useMutation({
@@ -152,7 +152,7 @@ const App = () => {
   return (
     <div>
       <Notification notification={notification} />
-      //the navigation menu is already implemented
+      {/*the navigation menu is already implemented*/}
       <div>
         <Link to="/">Home - </Link>
         <Link to="/users">Users</Link>
@@ -171,10 +171,13 @@ const App = () => {
         <Route path="/" element={<Home/>}/>
         <Route path="users" element={<Users users={users}/>}/>
         <Route path="users/:id" element={<User user={matchedUser}/>}/>
-        <Route path="blogs/:id" element={<Blog blog={matchedBlog}/>}/>
+        <Route path="blogs/:id" element={matchedBlog ? <Blog blog={matchedBlog} /> : <div>blog not found</div>}/>
       </Routes>
-
-
+      <br/>
+      <br/>
+      <footer>
+        <h3><i><b>made with 💘 by mahmoud</b></i></h3>
+      </footer>
       
     </div>
   )

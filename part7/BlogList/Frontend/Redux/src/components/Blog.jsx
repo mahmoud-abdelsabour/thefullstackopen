@@ -45,15 +45,6 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
   )
 }
 
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    url: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    user: PropTypes.object,
-  }).isRequired,
-  handleVote: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired,
-}
+
 
 export default Blog
