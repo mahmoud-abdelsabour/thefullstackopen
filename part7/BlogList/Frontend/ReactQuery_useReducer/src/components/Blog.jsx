@@ -6,7 +6,6 @@ import blogService from '../services/blogs'
 import NotificationContext from '../NotificationContext'
 
 const Blog = ({ blog }) => {
-  const [visible, setVisible] = useState(false)
   const {notificationDispatch} = useContext(NotificationContext)
 
   const updateBlogMutation = useMutation({
@@ -58,30 +57,33 @@ const Blog = ({ blog }) => {
   const canRemove = blog.user ? blog.user.username === storage.me() : true
 
   //console.log(blog.user, storage.me(), canRemove)
+  if(!blog){
+    return null
+  }
 
   return (
     <div style={style} className="blog">
-      {blog.title} by {blog.author}
-      <button style={{ marginLeft: 3 }} onClick={() => setVisible(!visible)}>
-        {visible ? 'hide' : 'view'}
-      </button>
-      {visible && (
-        <div>
-          <div>
-            <a href={blog.url}>{blog.url}</a>
-          </div>
-          <div>
-            likes {blog.likes}
-            <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
-              like
-            </button>
-          </div>
-          <div>{nameOfUser}</div>
-          {canRemove && (
-            <button onClick={() => handleDelete(blog)}>remove</button>
-          )}
-        </div>
+
+      <h1>{blog.title}</h1>
+
+      <div>
+        <a href={blog.url}>{blog.url}</a>
+      </div>
+
+      <div>
+        likes {blog.likes}
+        <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
+          like
+        </button>
+      </div>
+      
+      <div>added by {blog.user.name}</div>
+      {canRemove && (
+        <button onClick={() => handleDelete(blog)}>remove</button>
       )}
+
+
+
     </div>
   )
 }

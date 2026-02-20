@@ -10,6 +10,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
+import Blog from './components/Blog'
 import NotificationContext from './NotificationContext'
 import UserContext from './UserContext'
 import { Link, Routes, Route, useMatch } from 'react-router-dom'
@@ -39,6 +40,11 @@ const App = () => {
   const match = useMatch('/users/:id')
   const matchedUser = match
     ? users.find(user => user.id === match.params.id)
+    : null
+
+  const blogMatch = useMatch('/blogs/:id')
+  const matchedBlog = blogMatch
+    ? blogs.find(blog => blog.id === blogMatch.params.id)
     : null
 
   const newBlogMutation = useMutation({
@@ -152,18 +158,20 @@ const App = () => {
         <Link to="/users">Users</Link>
       </div>
 
+      <h2>blogs</h2>
+      
       <div>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </div>
 
-      <h2>blogs</h2>
 
 
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="users" element={<Users users={users}/>}/>
         <Route path="users/:id" element={<User user={matchedUser}/>}/>
+        <Route path="blogs/:id" element={<Blog blog={matchedBlog}/>}/>
       </Routes>
 
 
