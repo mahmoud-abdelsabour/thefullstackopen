@@ -150,7 +150,7 @@ const App = () => {
 
 
   return (
-    <div>
+    <div className='container'>
       <Notification notification={notification} />
       {/*the navigation menu is already implemented*/}
       <div>
